@@ -88,68 +88,49 @@ def addLinks():
         price = soup.find(id="priceblock_ourprice")
 
         if price is not None:
-            price = price.get_text()
-            convertedPrice = float(price[:-3].replace(',', '.'))
+            price = price.get_text().split()
+            convertedPrice = float(price[0].replace(',', '.'))
             break
         else:
             price = soup.find(id="priceblock_saleprice")
 
             if price is not None:
-                price = price.get_text()
-                convertedPrice = float(price[:-3].replace(',', '.'))
+                price = price.get_text().split()
+                convertedPrice = float(price[0].replace(',', '.'))
                 break
             else:
                 priceArr = soup.find_all(
                     class_="a-size-medium a-color-price offer-price a-text-normal")
                 for el in priceArr:
                     if el is not None:
-                        price = el.get_text()
-                        price = price.strip()
-                        # price = price.replace(" ", "") #altro metodo
-                        try:
-                            convertedPrice = float(
-                                price[4:-1].replace(',', '.'))
-                        except:
-                            convertedPrice = float(
-                                price[:-3].replace(',', '.'))
-                        while convertedPrice == 0:
-                            i = -3
-                            convertedPrice = float(
-                                price[:-i].replace(',', '.'))
-                            i -= 1
+                        price = el.get_text().split()
+                        convertedPrice = float(price[0].replace(',', '.'))
                         break
                 else:
                     priceArr = soup.find_all(
                         class_="a-size-medium a-color-price")
                     for el in priceArr:
                         if el is not None:
-                            price = el.get_text()
-                            price = price.strip()
-                            # price = price.replace(" ", "") #altro metodo
-                            convertedPrice = float(
-                                price[4:-1].replace(',', '.'))
+                            price = el.get_text().split()
+                            convertedPrice = float(price[0].replace(',', '.'))
                             break
                     else:
                         priceArr = soup.find_all(
                             class_="a-size-base a-color-price a-color-price")
                         for el in priceArr:
                             if el is not None:
-                                price = el.get_text()
-                                price = price.strip()
-                                # price = price.replace(" ", "") #altro metodo
+                                price = el.get_text().split()
                                 convertedPrice = float(
-                                    price[:-1].replace(',', '.'))
+                                    price[0].replace(',', '.'))
                                 break
                         else:
                             priceArr = soup.find_all(
                                 class_="a-size-base a-color-price offer-price a-text-normal")
                             for el in priceArr:
                                 if el is not None:
-                                    price = el.get_text()
-                                    price = price.strip()
-                                    # price = price.replace(" ", "") #altro metodo
+                                    price = el.get_text().split()
                                     convertedPrice = float(
-                                        price[:-1].replace(',', '.'))
+                                        price[0].replace(',', '.'))
                                     break
         break
     item = Item(title, convertedPrice, link, priceTarget)
