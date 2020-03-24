@@ -47,8 +47,8 @@ def readFileSaved():
                         item = Item(title, price, link, priceTarget)
                         items.append(item)
 
-                        if len(title) > 15:
-                            title = title[:15]
+                        if len(title) > 20:
+                            title = title[:20]
 
                         label1 = tk.Label(frame, text=title + ":  " + "Price " + str(
                             price) + " | " + "Price target " + str(priceTarget), bg="grey")
@@ -59,19 +59,7 @@ def readFileSaved():
                         print(priceTarget)
 
 
-def addLinks():
-
-    price = None
-    title = None
-
-    link = simpledialog.askstring("Insert a link", root)
-    if link:
-        priceTarget = simpledialog.askinteger("Insert the Target Price", root)
-    # getStuff(link)
-    page = requests.get(link, headers=headers)
-
-    soup = BeautifulSoup(page.content, 'html.parser')
-
+def checkTitle(title, soup):
     while title is None:
         title = soup.find(id="productTitle")
         if title is not None:
@@ -83,7 +71,10 @@ def addLinks():
             if title is not None:
                 title = title.get_text()
                 break
+    return title
 
+
+def checkPrice(price, convertedPrice, soup):
     while price is None:
         price = soup.find(id="priceblock_ourprice")
 
@@ -133,6 +124,26 @@ def addLinks():
                                         price[0].replace(',', '.'))
                                     break
         break
+    return convertedPrice
+
+
+def addLinks():
+
+    price = None
+    convertedPrice = None
+    title = None
+
+    link = simpledialog.askstring("Insert a link", root)
+    if link:
+        priceTarget = simpledialog.askinteger("Insert the Target Price", root)
+    # getStuff(link)
+    page = requests.get(link, headers=headers)
+
+    soup = BeautifulSoup(page.content, 'html.parser')
+
+    title = checkTitle(title, soup)
+    convertedPrice = checkPrice(price, convertedPrice, soup)
+
     item = Item(title, convertedPrice, link, priceTarget)
     items.append(item)
     if len(title) > 20:
@@ -143,6 +154,32 @@ def addLinks():
     print(items[0].price)
     print(items[0].title)
     print(items[0].priceTarget)
+
+
+def sendMail(convPrice, URL):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.ehlo()
+    # from ehlo  command sent by an email server to identify itself
+    #           when connecting to another email server to start the
+    #           process of sending an email
+    server.starttls()  # encrypt the connection
+    server.ehlo()
+    # in input? and check password
+    server.login('albi.benni8@gmail.com', 'woskkonrhirvglqk')
+
+    subject = 'Price fell down!' + convPrice
+    body = 'Check the amazon link: ' + URL
+
+    msg = f"Subject: {subject} \n\n {body}"
+
+    server.sendmail(
+        'albi.benni8@gmail.com',
+        'alby_b_@hotmail.it',
+        msg
+    )
+    print('Email sent!')
+
+    server.quit()
 
 
 # def getStuff(link):
