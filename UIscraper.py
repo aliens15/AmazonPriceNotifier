@@ -44,6 +44,23 @@ def readFileSaved():
                         link = listTots[2]
                         priceTarget = float(listTots[3])
 
+                        page = requests.get(link, headers=headers)
+                        soup = BeautifulSoup(page.content, 'html.parser')
+                        provprice = None
+                        provprice2 = None
+                        # check for lower price (all the items in the save.txt are checked)
+                        newPrice = checkPrice(provprice, provprice2, soup)
+
+                        # maybe another check or start with windows?
+
+                        if newPrice < price:
+                            print(title + " Price lower")
+                            if newPrice <= priceTarget:
+                                sendMail(newPrice, link)
+                                print(title + " Price is good now!")
+                        else:
+                            print(title + " Price equal or greater")
+
                         item = Item(title, price, link, priceTarget)
                         items.append(item)
 
