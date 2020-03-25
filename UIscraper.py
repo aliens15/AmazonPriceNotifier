@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import smtplib
 import time
+
 # file per prendere l'app e text per text
 from tkinter import filedialog, Text, simpledialog
 import os  # per fare funzionare l'app
@@ -35,7 +36,6 @@ def readFileSaved():
                 # bisogna inserire il controllo su | come carattere per staccare le stringhe nel foglio txt
                 tempApps = f.read()
                 nItems = tempApps.split('~')
-                print(len(nItems))
                 for tokens in nItems:
                     if tokens:
                         listTots = tokens.split('|')
@@ -46,18 +46,12 @@ def readFileSaved():
 
                         page = requests.get(link, headers=headers)
                         soup = BeautifulSoup(page.content, 'html.parser')
-                        provprice = None
-                        provprice2 = None
                         # check for lower price (all the items in the save.txt are checked)
-                        newPrice = checkPrice(provprice, provprice2, soup)
-
+                        newPrice = checkPrice(soup)
                         # maybe another check or start with windows?
-
-                        if newPrice < price:
-                            print(title + " Price lower")
-                            if newPrice <= priceTarget:
-                                sendMail(newPrice, link)
-                                print(title + " Price is good now!")
+                        if newPrice <= priceTarget:
+                            sendMail(newPrice, link)
+                            print(title + " Price is good now!")
                         else:
                             print(title + " Price equal or greater")
 
@@ -70,13 +64,10 @@ def readFileSaved():
                         label1 = tk.Label(frame, text=title + ":  " + "Price " + str(
                             price) + " | " + "Price target " + str(priceTarget), bg="grey")
                         label1.pack()
-                        print(title)
-                        print(price)
-                        print(link)
-                        print(priceTarget)
 
 
-def checkTitle(title, soup):
+def checkTitle(soup):
+    title = None
     while title is None:
         title = soup.find(id="productTitle")
         if title is not None:
@@ -91,7 +82,8 @@ def checkTitle(title, soup):
     return title
 
 
-def checkPrice(price, convertedPrice, soup):
+def checkPrice(soup):
+    price = None
     while price is None:
         price = soup.find(id="priceblock_ourprice")
 
@@ -168,9 +160,6 @@ def addLinks():
     label = tk.Label(frame, text=title + ":  " + "Price " +
                      str(convertedPrice) + " | " + "Price target " + str(priceTarget), bg="grey")
     label.pack()
-    print(items[0].price)
-    print(items[0].title)
-    print(items[0].priceTarget)
 
 
 def sendMail(convPrice, URL):
@@ -184,7 +173,7 @@ def sendMail(convPrice, URL):
     # in input? and check password
     server.login('albi.benni8@gmail.com', 'woskkonrhirvglqk')
 
-    subject = 'Price fell down!' + convPrice
+    subject = 'Price fell down!' + str(convPrice)
     body = 'Check the amazon link: ' + URL
 
     msg = f"Subject: {subject} \n\n {body}"
