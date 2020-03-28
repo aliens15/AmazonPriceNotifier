@@ -1,15 +1,13 @@
-import tkinter as tk  # per la gui
-import win32ctypes.pywin32
+from tkinter import *  # per la gui
+
 import requests
 from bs4 import BeautifulSoup
 import smtplib
 import time
 
-# file per prendere l'app e text per text
-from tkinter import filedialog, Text, simpledialog
 import os  # per fare funzionare l'app
 
-root = tk.Tk()  # dove attaccare ...
+root = Tk()  # dove attaccare ...
 
 firstTurn = True
 
@@ -61,7 +59,7 @@ def readFileSaved():
                         if len(title) > 20:
                             title = title[:20]
 
-                        label1 = tk.Label(frame, text=title + ":  " + "Price " + str(
+                        label1 = Label(frame, text=title + ":  " + "Price " + str(
                             price) + " | " + "Price target " + str(priceTarget), bg="grey")
                         label1.pack()
 
@@ -137,14 +135,14 @@ def checkPrice(soup):
 
 
 def addLinks():
+    link = eLink.get(),
+    priceTarget = ePriceTarget.get()
 
+    link = str(link)
+    priceTarget = float(priceTarget)
     price = None
     convertedPrice = None
     title = None
-
-    link = simpledialog.askstring("Insert a link", root)
-    if link:
-        priceTarget = simpledialog.askinteger("Insert the Target Price", root)
     # getStuff(link)
     page = requests.get(link, headers=headers)
 
@@ -157,8 +155,8 @@ def addLinks():
     items.append(item)
     if len(title) > 20:
         title = title[:20]
-    label = tk.Label(frame, text=title + ":  " + "Price " +
-                     str(convertedPrice) + " | " + "Price target " + str(priceTarget), bg="grey")
+    label = Label(frame, text=title + ":  " + "Price " +
+                  str(convertedPrice) + " | " + "Price target " + str(priceTarget), bg="grey")
     label.pack()
 
 
@@ -192,17 +190,21 @@ def sendMail(convPrice, URL):
 # build the item object
 # item = Item(convertedPrice, title, link)
 # items.append(item)
-canvas = tk.Canvas(root, height=500, width=500, bg='#263D42')
+canvas = Canvas(root, height=500, width=500, bg='#263D42')
 canvas.pack()
 
-frame = tk.Frame(root, bg="#D3D3D3")
+frame = Frame(root, bg="#D3D3D3")
 
 frame.place(relwidth=0.8, relheight=0.8, relx=0.1, rely=0.075)
 # rel + x/y indica le x o le y
 readFileSaved()
 
-inserLink = tk.Button(root, text="Insert Link", padx=10, pady=5,
-                      fg="white", bg="#263D42", command=addLinks)
+
+eLink = Entry(root)
+eLink.pack()
+ePriceTarget = Entry(root)
+ePriceTarget.pack()
+inserLink = Button(root, text="Enter your Link", command=addLinks)
 
 inserLink.pack()
 
